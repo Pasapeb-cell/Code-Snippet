@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styles.css') }}">
         <title>Code Snippet Chat</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js" integrity="sha512-+k1pnlgt4F1H8L7t3z95o3/KO+o78INEcXTbnoJQ/F2VqDVhWoaiVml/OEHv9HsVgxUaVW+IbiZPUJQfF/YxZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js" integrity="sha512-tE1z+95+lMCGwy+9PnKgUSIeHhvioC9lMlI7rLWU0Ps3XTdjRygLcy4mLuL0JAoK4TLdQEyP0yOl/9dMOqpH/Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -10,26 +10,31 @@
     <body>
         <script type="text/javascript">
             $(document).ready(function(){
-                var socket = io.connect('http://localhost:5000');
+                var socket = io.connect('http://localhost:5000/');
                 socket.on("connect", function(){
                     socket.send("User connected");
                 });
             })
 
-            socket.on("message", function(msg){
-               $("#messages").append($('<p>').text(data));
+            socket.on("messageReceived", function(msg){
+                $("#messages").append($('<p>').text(msg));
+            });
+
+            socket.on("userMessage", function(msg){
+               $("#messages").append($('<p>').text(msg));
+                // socket.send("messageReceived");
             });
 
             $("#sendBtn").on("click", function(){
-                socket.send($('#username').val() + ": " + $("#message").val());
-                $("#message").val("");
+                socket.send($('#username').val() + ": " + $("#userMessage").val());
+                $("#userMessage").val("");
             });
         </script>
         <div id="messages">
 
         </div>
         <input type="text" id="username" placeholder="Username">
-        <input type="text" id="message" placeholder="Message">
+        <input type="text" id="userMessage" placeholder="Message">
         <button id="sendBtn">Send</button>
     </body>
 </html>
